@@ -1,0 +1,133 @@
+###############################################################################
+# esthesis platform
+###############################################################################
+
+# Define secrets.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: esthesis-secrets
+type: Opaque
+stringData:
+  esthesis-platform-server-container_esthesis.jwt_secret: "5f280f46-ce0f-4804-9f65-9792fb4db738"
+  esthesis-platform-server-container_spring.datasource.password: "root"
+
+# Define config maps.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: esthesis-configmap
+data:
+  esthesis-platform-server-container_spring.datasource.url: "jdbc:mysql://esthesis-infra-db-service:3306/esthesis?autoReconnect=true&createDatabaseIfNotExist=true&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&maxReconnects=10"
+  esthesis-platform-server-container_spring.datasource.username: "root"
+
+# esthesis back-end.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-server-service
+spec:
+  selector:
+    app: esthesis-platform-server
+  ports:
+    - port: 46000
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-platform-server-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-platform-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-platform-server
+    spec:
+      containers:        
+        - name: esthesis-platform-server-container
+          image: docker-registry.local.nassosmichas.com/esthesis-platform-server
+          ports:
+            - containerPort: 46000
+          env:
+            - name: spring.datasource.url
+              valueFrom:
+                configMapKeyRef:
+                  name: esthesis-configmap
+                  key: esthesis-platform-server-container_spring.datasource.url
+            - name: esthesis.jwt_secret
+              valueFrom:
+                secretKeyRef:
+                  name: esthesis-secrets
+                  key: esthesis-platform-server-container_esthesis.jwt_secret
+            - name: spring.datasource.username
+              valueFrom:
+                configMapKeyRef:
+                  name: esthesis-configmap
+                  key: esthesis-platform-server-container_spring.datasource.username
+            - name: spring.datasource.username
+              valueFrom:
+                secretKeyRef:
+                  name: esthesis-secrets
+                  key: esthesis-platform-server-container_spring.datasource.password
+          readinessProbe:
+            httpGet:
+              path: /api/ping
+              port: 46000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /api/ping
+              port: 46000
+            initialDelaySeconds: 120
+            periodSeconds: 30
+
+# esthesis front-end.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-ui-service
+spec:
+  selector:
+    app: esthesis-platform-ui
+  ports:
+    - port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-platform-ui-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-platform-ui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-platform-ui
+    spec:
+      containers:        
+        - name: esthesis-platform-ui-container
+          image: docker-registry.local.nassosmichas.com/esthesis-platform-ui
+          ports:
+            - containerPort: 80          
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /index.html
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 30
