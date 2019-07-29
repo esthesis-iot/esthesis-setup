@@ -1,0 +1,68 @@
+####################################################################################################
+# esthesis platform
+#
+# esthesis platform back-end/server
+####################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-server-service
+spec:
+  selector:
+    app: esthesis-platform-server
+  ports:
+    - port: 46000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-platform-server-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-platform-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-platform-server
+    spec:
+      containers:
+        - name: esthesis-platform-server
+          image: $REGISTRY/esthesis-platform-server
+          ports:
+            - containerPort: 46000
+          env:
+            - name: spring.datasource.url
+              valueFrom:
+                configMapKeyRef:
+                  name: esthesis-configmap
+                  key: esthesis-platform-server__spring.datasource.url
+            - name: esthesis.jwt_secret
+              valueFrom:
+                secretKeyRef:
+                  name: esthesis-secrets
+                  key: esthesis-platform-server__esthesis.jwt_secret
+            - name: spring.datasource.username
+              valueFrom:
+                configMapKeyRef:
+                  name: esthesis-configmap
+                  key: esthesis-platform-server_s_pring.datasource.username
+            - name: spring.datasource.password
+              valueFrom:
+                secretKeyRef:
+                  name: esthesis-secrets
+                  key: esthesis-platform-server__spring.datasource.password
+          readinessProbe:
+            httpGet:
+              path: /api/ping
+              port: 46000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /api/ping
+              port: 46000
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            failureThreshold: 2
