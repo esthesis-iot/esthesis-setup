@@ -1,7 +1,7 @@
 ####################################################################################################
 # esthesis platform
 #
-# esthesis platform back-end/server
+# esthesis platform server
 ####################################################################################################
 apiVersion: v1
 kind: Service
@@ -36,7 +36,7 @@ spec:
             - name: spring.datasource.url
               valueFrom:
                 configMapKeyRef:
-                  name: esthesis-configmap
+                  name: esthesis-config
                   key: esthesis-platform-server__spring.datasource.url
             - name: esthesis.jwt_secret
               valueFrom:
@@ -46,13 +46,16 @@ spec:
             - name: spring.datasource.username
               valueFrom:
                 configMapKeyRef:
-                  name: esthesis-configmap
-                  key: esthesis-platform-server_s_pring.datasource.username
+                  name: esthesis-config
+                  key: esthesis-platform-server__spring.datasource.username
             - name: spring.datasource.password
               valueFrom:
                 secretKeyRef:
                   name: esthesis-secrets
                   key: esthesis-platform-server__spring.datasource.password
+          volumeMounts:
+            - mountPath: "/data"
+              name: esthesis-platform-server-pv
           readinessProbe:
             httpGet:
               path: /api/ping
@@ -66,3 +69,7 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 30
             failureThreshold: 2
+      volumes:
+        - name: esthesis-platform-server-pv
+          persistentVolumeClaim:
+            claimName: esthesis-platform-server-pvc
