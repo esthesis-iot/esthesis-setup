@@ -38,6 +38,8 @@ spec:
                 configMapKeyRef:
                   name: esthesis-config
                   key: esthesis-platform-server__spring.datasource.url
+            - name: esthesis.fsRoot
+              value: "/data"
             - name: esthesis.jwt_secret
               valueFrom:
                 secretKeyRef:

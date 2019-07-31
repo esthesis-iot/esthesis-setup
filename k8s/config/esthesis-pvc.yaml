@@ -29,17 +29,3 @@ spec:
     requests:
       storage: 100Gi
   storageClassName: nfs-client
-
-# PVC for datasink InfluxDB
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: esthesis-ds-influxdb-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Gi
-  storageClassName: nfs-client

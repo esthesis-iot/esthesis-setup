@@ -2,6 +2,7 @@
 # esthesis global configuration and secrets
 ####################################################################################################
 # Define secrets.
+---
 apiVersion: v1
 kind: Secret
 metadata:

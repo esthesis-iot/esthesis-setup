@@ -1,0 +1,103 @@
+####################################################################################################
+# esthesis datasink
+#
+# InfluxDB datasink
+####################################################################################################
+
+# PVC for datasink InfluxDB
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: esthesis-ds-influxdb-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: nfs-client
+
+# Secrets definition.
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: esthesis-ds-influxdb-secrets
+type: Opaque
+stringData:
+  admin_password: "esthesis"
+
+# Configuration definition.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: esthesis-ds-influxdb-config
+data:
+  admin_user: "esthesis"
+
+# DS definition.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-ds-influxdb
+spec:
+  selector:
+    app: esthesis-ds-influxdb
+  ports:
+    - port: 8086
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-ds-influxdb-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-dx-influxdb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-dx-influxdb
+    spec:
+      containers:
+        - name: esthesis-dx-influxdb
+          image: influxdb:1.7.5
+          ports:
+            - containerPort: 8806
+          env:
+            - name: INFLUXDB_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: esthesis-ds-influxdb-secrets
+                  key: admin_password
+            - name: INFLUXDB_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: esthesis-ds-influxdb-config
+                  key: admin_user
+            - name: INFLUXDB_DB
+              value: "esthesis"
+          volumeMounts:
+            - mountPath: "/var/lib/influxdb"
+              name: esthesis-ds-influxdb-pv
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8086
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          livenessProbe:
+              httpGet:
+                path: /ping
+                port: 8086
+              initialDelaySeconds: 45
+              periodSeconds: 15
+              failureThreshold: 2
+      volumes:
+        - name: esthesis-ds-influxdb-pv
+          persistentVolumeClaim:
+            claimName: esthesis-ds-influxdb-pvc
