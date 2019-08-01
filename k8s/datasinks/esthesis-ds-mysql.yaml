@@ -1,6 +1,6 @@
 ####################################################################################################
-# esthesis-ds-influxdb
-# An instance of InfluxDB.
+# esthesis-ds-mysql
+# A MySQL database to be used as a data sink.
 ####################################################################################################
 
 ####################################################################################################
@@ -10,10 +10,11 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: esthesis-ds-influxdb-secrets
+  name: esthesis-ds-mysql-secrets
 type: Opaque
 stringData:
-  admin_password: "esthesis"
+  # The password for the root user used by the MySQL database of esthesis platform.
+  MYSQL_ROOT_PASSWORD: "root"
 
 ####################################################################################################
 # Configmap
@@ -22,9 +23,10 @@ stringData:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: esthesis-ds-influxdb-config
+  name: esthesis-ds-mysql-config
 data:
-  admin_user: "esthesis"
+  # The maximum packet allowed allowed for esthesis platform MySQL database.
+  MAX_ALLOWED_PACKET: "1024000000"
 
 ####################################################################################################
 # PVC
@@ -33,7 +35,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: esthesis-ds-influxdb-pvc
+  name: esthesis-ds-mysql-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -43,72 +45,71 @@ spec:
   storageClassName: $STORAGECLASS
 
 ####################################################################################################
-# Service
+# MySQL service
 ####################################################################################################
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: esthesis-ds-influxdb
+  name: esthesis-ds-mysql-service
 spec:
   selector:
-    app: esthesis-ds-influxdb
+    app: esthesis-ds-mysql
   ports:
-    - port: 8086
+    - port: 3306
 
 ####################################################################################################
-# Deployment
+# MySQL service deployment
 ####################################################################################################
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: esthesis-ds-influxdb-deployment
+  name: esthesis-ds-mysql-deployment
 spec:
   selector:
     matchLabels:
-      app: esthesis-ds-influxdb
+      app: esthesis-ds-mysql
   replicas: 1
   template:
     metadata:
       labels:
-        app: esthesis-ds-influxdb
+        app: esthesis-ds-mysql
     spec:
       containers:
-        - name: esthesis-ds-influxdb
-          image: influxdb:1.7.5
+        - name: esthesis-ds-mysql
+          image: mysql:8.0.16
+          args:
+            - "--default-authentication-plugin=mysql_native_password"
+            - "--max_allowed_packet=$(MAX_ALLOWED_PACKET)"
           ports:
-            - containerPort: 8806
+            - containerPort: 3306
           env:
-            - name: INFLUXDB_ADMIN_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: esthesis-ds-influxdb-secrets
-                  key: admin_password
-            - name: INFLUXDB_ADMIN_USER
+                  name: esthesis-ds-mysql-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MAX_ALLOWED_PACKET
               valueFrom:
                 configMapKeyRef:
-                  name: esthesis-ds-influxdb-config
-                  key: admin_user
-            - name: INFLUXDB_DB
-              value: "esthesis"
+                  name: esthesis-ds-mysql-config
+                  key: MAX_ALLOWED_PACKET
           volumeMounts:
-            - mountPath: "/var/lib/influxdb"
-              name: esthesis-ds-influxdb-pv
+            - mountPath: "/var/lib/mysql"
+              name: esthesis-ds-mysql-pv
           readinessProbe:
-            httpGet:
-              path: /ping
-              port: 8086
+            tcpSocket:
+              port: 3306
             initialDelaySeconds: 30
-            periodSeconds: 15
+            periodSeconds: 30
           livenessProbe:
-              httpGet:
-                path: /ping
-                port: 8086
-              initialDelaySeconds: 45
-              periodSeconds: 15
-              failureThreshold: 2
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            failureThreshold: 2
       volumes:
-        - name: esthesis-ds-influxdb-pv
+        - name: esthesis-ds-mysql-pv
           persistentVolumeClaim:
-            claimName: esthesis-ds-influxdb-pvc
+            claimName: esthesis-ds-mysql-pvc

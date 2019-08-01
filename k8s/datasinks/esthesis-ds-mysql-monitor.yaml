@@ -1,0 +1,92 @@
+####################################################################################################
+# esthesis-ds-mysql-monitor
+# A phpMyAdmin frontend for esthesis platform's main database.
+####################################################################################################
+
+####################################################################################################
+# Secrets
+####################################################################################################
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: esthesis-ds-mysql-monitor-secrets
+type: Opaque
+stringData:
+  # The password for the user phpMyAdmin will connect to the MySQL database.
+  PMA_PASSWORD: "root"
+
+####################################################################################################
+# Configmap
+####################################################################################################
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: esthesis-ds-mysql-monitor-config
+data:
+  PMA_USER: "root"
+
+####################################################################################################
+# Service
+####################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-ds-mysql-monitor-service
+spec:
+  selector:
+    app: esthesis-ds-mysql-monitor
+  ports:
+    - port: 80
+
+####################################################################################################
+# MySQL service deployment
+####################################################################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-ds-mysql-monitor-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-ds-mysql-monitor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-ds-mysql-monitor
+    spec:
+      containers:
+        - name: esthesis-ds-mysql-monitor
+          image: phpmyadmin/phpmyadmin:4.9
+          ports:
+            - containerPort: 80
+          env:
+            - name: PMA_HOST
+              value: "esthesis-ds-mysql-service"
+            - name: PMA_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: esthesis-ds-mysql-monitor-config
+                  key: PMA_USER
+            - name: PMA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: esthesis-ds-mysql-monitor-secrets
+                  key: PMA_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            failureThreshold: 2
