@@ -98,6 +98,19 @@ STORAGECLASS=your-storageclass \
 bash -c 'for f in $(find . -name "*.yaml"); do envsubst < $f | kubectl apply -f -; done'
 ```
 
-### Dev environment on Minikube and volumes
+### Dev environment on Minikube
+#### Volumes
 When booting up dev environments on Minikube, you can use the `standard` storage class. In that case,
 your PVs are creted under `/tmp/hostpath-provisioner` on the Minikube machine.
+#### Exposing services to your development machine
+You can expose services running in pods to your local machine via:
+```
+minikube port-forward {name-of-pod} local-port:pod-port
+```
+
+For example, if you have an nginx pod named "nginx-ab345i" exposing port 80, you can forward this 
+port to your development machine on port 8080 by executing:
+```
+minikube port-forward nginx-ab345i 8080:80
+```
+And you can access it via http://localhost:8080.
