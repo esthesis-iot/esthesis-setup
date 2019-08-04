@@ -1,3 +1,5 @@
+# OBSOLETE - Use Kubernetes configuration on Minikube
+
 # esthes.is - Development environment setup
 To quickly setup all necessary infrastructure for your development
 environment you can use the Docker containers specified in this project.
