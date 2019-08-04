@@ -83,7 +83,7 @@ spec:
     spec:
       containers:
         - name: esthesis-platform-server
-          image: $REGISTRY/esthesis-platform-server
+          image: esthesis/esthesis-platform-server
           ports:
             - containerPort: 46000
           env:
@@ -129,3 +129,5 @@ spec:
         - name: esthesis-platform-server-pv
           persistentVolumeClaim:
             claimName: esthesis-platform-server-pvc
+      imagePullSecrets:
+        - name: esthesis-docker-registry

@@ -8,12 +8,17 @@ specific environment.
 ## Prerequisites
 * A Kubernetes environment >= 1.15
 * A shell with [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html)
+* A Docker hub account for esthesis.
+    * To allow Kubernetes to pull from the private Docker registry you should create a resource for the
+    credentials of the registry:
+    ```
+    kubectl create secret docker-registry esthesis-docker-registry --docker-server=docker.io \
+        --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+    ```
 
 ## Configuration resources
 The esthesis configurations/deployments for Kubernetes are grouped into several categories as presented next.
-Most resources, require you to define the Docker Registry from which Docker images are pulled as well as the
-Storage Class from which Kubernetes will provide you a persistent volume. If case you have no special
-persistent volume provisioner in your environment, you can use the `standard` class.
+If case you have no special persistent volume provisioner in your environment, you can use the `standard` class.
 
 ### Platform
 Contains the configurations to deploy the two main artifacts of esthesis platform.
@@ -22,8 +27,7 @@ Contains the configurations to deploy the two main artifacts of esthesis platfor
 The frontend component of esthesis platform.
 
 ```
-REGISTRY=your-registry \
-envsubst < platform/esthesis-platform-ui.yaml | kubectl apply -f -
+kubectl apply -f platform/esthesis-platform-ui.yaml
 ```
 Substitute `REGISTRY` with the location of the Docker Registry hosting the `esthesis-platform-server` container.
 
@@ -31,7 +35,6 @@ Substitute `REGISTRY` with the location of the Docker Registry hosting the `esth
 The backend component of esthesis platform.
 
 ```
-REGISTRY=your-registry \
 STORAGECLASS=your-storageclass \
 envsubst < platform/esthesis-platform-server.yaml | kubectl apply -f -
 ```
@@ -90,13 +93,29 @@ A phpMyAdmin frontend for esthesis platform's main MySQL database.
 kubectl apply -f platform-services/esthesis-ps-db-monitor.yaml
 ```
 
+### Backup
+All database-related resources come with an optional `*-backup.yaml` resource configuration. 
+This is a container based on [tiredofit/db-backup](https://hub.docker.com/r/tiredofit/db-backup)
+which allows you to take automatic backups at predefined intervals.
+
+#### esthesis-ds-influxdb-backup.yaml
+A backup container for the InfluxDB data sink.
+```
+STORAGECLASS=your-storageclass \
+envsubst < datasinks/esthesis-ds-influxdb-backup.yaml | kubectl apply -f -
+```
+
+
 ### Make-all environment
 You can create an environment with all resources issuing just a single command:
 ```
-REGISTRY=esthesis-registry \
 STORAGECLASS=your-storageclass \
 bash -c 'for f in $(find . -name "*.yaml"); do envsubst < $f | kubectl apply -f -; done'
 ```
+
+Mind you that if you run the above on an empty cluster it might take some time (5-10') before
+all resources are properly deployed. Just let K8s do its job and restart pods until everything
+is up and running.
 
 ### Dev environment on Minikube
 #### Volumes

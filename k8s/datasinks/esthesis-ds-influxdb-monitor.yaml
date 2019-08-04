@@ -64,7 +64,7 @@ spec:
         - name: esthesis-ds-influxdb-monitor
           image: chronograf:1.7.8
           args:
-            - "--influxdb-url=http://esthesis-ds-influxdb:8086"
+            - "--influxdb-url=http://esthesis-ds-influxdb-service:8086"
           ports:
             - containerPort: 8888
           readinessProbe:

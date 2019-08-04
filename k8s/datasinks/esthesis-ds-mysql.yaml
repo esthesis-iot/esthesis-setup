@@ -82,6 +82,8 @@ spec:
           args:
             - "--default-authentication-plugin=mysql_native_password"
             - "--max_allowed_packet=$(MAX_ALLOWED_PACKET)"
+            - "--character-set-server=utf8mb4"
+            - "--collation-server=utf8mb4_unicode_ci"
           ports:
             - containerPort: 3306
           env:
@@ -95,6 +97,8 @@ spec:
                 configMapKeyRef:
                   name: esthesis-ds-mysql-config
                   key: MAX_ALLOWED_PACKET
+            - name: MYSQL_DATABASE
+              value: "esthesis"
           volumeMounts:
             - mountPath: "/var/lib/mysql"
               name: esthesis-ds-mysql-pv
@@ -106,7 +110,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 3306
-            initialDelaySeconds: 90
+            initialDelaySeconds: 60
             periodSeconds: 15
             failureThreshold: 2
       volumes:

@@ -43,18 +43,23 @@ spec:
   storageClassName: $STORAGECLASS
 
 ####################################################################################################
-# Service
+# Services (HTTP + RPC)
 ####################################################################################################
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: esthesis-ds-influxdb
+  name: esthesis-ds-influxdb-service
 spec:
   selector:
     app: esthesis-ds-influxdb
   ports:
     - port: 8086
+      name: http
+      targetPort: 8086
+    - port: 8088
+      name: rpc
+      targetPort: 8088
 
 ####################################################################################################
 # Deployment
@@ -78,7 +83,8 @@ spec:
         - name: esthesis-ds-influxdb
           image: influxdb:1.7.5
           ports:
-            - containerPort: 8806
+            - containerPort: 8086
+            - containerPort: 8088
           env:
             - name: INFLUXDB_ADMIN_PASSWORD
               valueFrom:
@@ -92,6 +98,8 @@ spec:
                   key: admin_user
             - name: INFLUXDB_DB
               value: "esthesis"
+            - name: INFLUXDB_BIND_ADDRESS
+              value: ":8088"
           volumeMounts:
             - mountPath: "/var/lib/influxdb"
               name: esthesis-ds-influxdb-pv

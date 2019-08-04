@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
         - name: esthesis-platform-ui
-          image: $REGISTRY/esthesis-platform-ui
+          image: esthesis/esthesis-platform-ui
           ports:
             - containerPort: 80
           readinessProbe:
@@ -53,3 +53,5 @@ spec:
             initialDelaySeconds: 45
             periodSeconds: 15
             failureThreshold: 2
+      imagePullSecrets:
+        - name: esthesis-docker-registry
