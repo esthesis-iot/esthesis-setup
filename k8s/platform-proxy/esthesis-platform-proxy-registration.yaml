@@ -1,0 +1,57 @@
+####################################################################################################
+# esthesis-platform-proxy-registration
+# A reverse proxy to expose the registration service of esthesis platform.
+####################################################################################################
+
+####################################################################################################
+# Service
+####################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-proxy-registration-service
+spec:
+  selector:
+    app: esthesis-platform-proxy-registration
+  ports:
+    - port: 80
+
+####################################################################################################
+# Deployment
+####################################################################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-platform-proxy-registration-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-platform-proxy-registration
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-platform-proxy-registration
+    spec:
+      containers:
+        - name: esthesis-platform-proxy-registration
+          image: esthesis/esthesis-platform-proxy-registration
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            failureThreshold: 2
+      imagePullSecrets:
+        - name: esthesis-dockerhub
