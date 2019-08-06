@@ -42,7 +42,6 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: $STORAGECLASS
 
 ####################################################################################################
 # MySQL service

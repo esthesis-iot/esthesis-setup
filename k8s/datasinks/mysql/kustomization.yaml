@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - esthesis-ds-mysql.yaml
+  - esthesis-ds-mysql-backup.yaml
+  - esthesis-ds-mysql-ui.yaml

@@ -47,7 +47,6 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: $STORAGECLASS
 
 ####################################################################################################
 # Service
@@ -130,4 +129,4 @@ spec:
           persistentVolumeClaim:
             claimName: esthesis-platform-server-pvc
       imagePullSecrets:
-        - name: esthesis-docker-registry
+        - name: esthesis-dockerhub

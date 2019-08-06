@@ -40,7 +40,6 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: $STORAGECLASS
 
 ####################################################################################################
 # Services (HTTP + RPC)

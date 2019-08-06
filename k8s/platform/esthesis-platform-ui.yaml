@@ -54,4 +54,4 @@ spec:
             periodSeconds: 15
             failureThreshold: 2
       imagePullSecrets:
-        - name: esthesis-docker-registry
+        - name: esthesis-dockerhub
