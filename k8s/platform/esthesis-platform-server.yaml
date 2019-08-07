@@ -83,6 +83,7 @@ spec:
       containers:
         - name: esthesis-platform-server
           image: esthesis/esthesis-platform-server
+          imagePullPolicy: Always
           ports:
             - containerPort: 46000
           env:

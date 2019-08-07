@@ -38,6 +38,7 @@ spec:
       containers:
         - name: esthesis-platform-proxy-provisioning
           image: esthesis/esthesis-platform-proxy-provisioning
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           readinessProbe:

@@ -38,6 +38,7 @@ spec:
       containers:
         - name: esthesis-platform-ui
           image: esthesis/esthesis-platform-ui
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           readinessProbe:
