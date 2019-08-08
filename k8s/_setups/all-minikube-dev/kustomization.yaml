@@ -4,6 +4,7 @@ kind: Kustomization
 bases:
   - ../../platform-services
   - ../../datasinks
-  - ../../platform
-  - ../../platform-proxy
   - ../../ingestion-services
+
+patchesStrategicMerge:
+  - all-minikube-dev.yaml

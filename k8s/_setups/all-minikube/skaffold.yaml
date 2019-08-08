@@ -1,0 +1,5 @@
+apiVersion: skaffold/v1beta1
+kind: Config
+deploy:
+  kustomize:
+    path: esthesis-setup/k8s/_setups/all-minikube

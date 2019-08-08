@@ -70,6 +70,8 @@ spec:
     matchLabels:
       app: esthesis-ps-db
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:

@@ -70,6 +70,8 @@ spec:
     matchLabels:
       app: esthesis-ds-mysql
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:

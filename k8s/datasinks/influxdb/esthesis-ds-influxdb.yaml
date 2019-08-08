@@ -73,6 +73,8 @@ spec:
     matchLabels:
       app: esthesis-ds-influxdb
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:

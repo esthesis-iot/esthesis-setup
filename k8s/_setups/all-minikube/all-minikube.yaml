@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-server-service
+spec:
+  selector:
+    app: esthesis-platform-server
+  ports:
+    - port: 46000
+      nodePort: 32001
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-ui-service
+spec:
+  selector:
+    app: esthesis-platform-ui
+  ports:
+    - port: 80
+      nodePort: 32000
+  type: NodePort
