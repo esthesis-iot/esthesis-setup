@@ -8,7 +8,7 @@ spec:
     app: esthesis-ps-db
   ports:
     - port: 3306
-      nodePort: 30000
+      nodePort: 32101
   type: NodePort
 
 ---
@@ -21,21 +21,7 @@ spec:
     app: esthesis-ps-db-monitor
   ports:
     - port: 80
-      nodePort: 30001
-  type: NodePort
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: esthesis-ds-influxdb-service
-spec:
-  selector:
-    app: esthesis-ds-influxdb
-  ports:
-    - port: 8086
-      name: http
-      nodePort: 30002
+      nodePort: 32102
   type: NodePort
 
 ---
@@ -48,20 +34,7 @@ spec:
     app: esthesis-ds-influxdb-monitor
   ports:
     - port: 8888
-      nodePort: 30003
-  type: NodePort
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: esthesis-ds-mysql-service
-spec:
-  selector:
-    app: esthesis-ds-mysql
-  ports:
-    - port: 3306
-      nodePort: 30004
+      nodePort: 32103
   type: NodePort
 
 ---
@@ -74,7 +47,7 @@ spec:
     app: esthesis-ds-mysql-monitor
   ports:
     - port: 80
-      nodePort: 30005
+      nodePort: 32107
   type: NodePort
 
 ---
@@ -87,5 +60,5 @@ spec:
     app: esthesis-is-mqtt-cert
   ports:
     - port: 1883
-      nodePort: 30006
+      nodePort: 32104
   type: NodePort

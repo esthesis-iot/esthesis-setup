@@ -1,15 +1,15 @@
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: esthesis-platform-server-service
-spec:
-  selector:
-    app: esthesis-platform-server
-  ports:
-    - port: 46000
-      nodePort: 32001
-  type: NodePort
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: esthesis-platform-server-service
+#spec:
+#  selector:
+#    app: esthesis-platform-server
+#  ports:
+#    - port: 46000
+#      nodePort: 32001
+#  type: NodePort
 
 ---
 apiVersion: v1
@@ -22,4 +22,82 @@ spec:
   ports:
     - port: 80
       nodePort: 32000
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-ps-db-monitor-service
+spec:
+  selector:
+    app: esthesis-ps-db-monitor
+  ports:
+    - port: 80
+      nodePort: 32002
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-ds-influxdb-monitor-service
+spec:
+  selector:
+    app: esthesis-ds-influxdb-monitor
+  ports:
+    - port: 8888
+      nodePort: 32003
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-ds-mysql-monitor-service
+spec:
+  selector:
+    app: esthesis-ds-mysql-monitor
+  ports:
+    - port: 80
+      nodePort: 32007
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-is-mqtt-cert-service
+spec:
+  selector:
+    app: esthesis-is-mqtt-cert
+  ports:
+    - port: 1883
+      nodePort: 32004
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-proxy-provisioning-service
+spec:
+  selector:
+    app: esthesis-platform-proxy-provisioning
+  ports:
+    - port: 80
+      nodePort: 32005
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-proxy-registration-service
+spec:
+  selector:
+    app: esthesis-platform-proxy-registration
+  ports:
+    - port: 80
+      nodePort: 32006
   type: NodePort
