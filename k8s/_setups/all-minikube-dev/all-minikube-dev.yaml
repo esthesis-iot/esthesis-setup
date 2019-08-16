@@ -41,6 +41,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: esthesis-ds-influxdb-service
+spec:
+  selector:
+    app: esthesis-ds-influxdb
+  ports:
+    - port: 8086
+      name: http
+      targetPort: 8086
+      nodePort: 32108
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: esthesis-ds-mysql-monitor-service
 spec:
   selector:

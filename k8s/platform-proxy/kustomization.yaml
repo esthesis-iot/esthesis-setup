@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - esthesis-platform-proxy-provisioning.yaml
   - esthesis-platform-proxy-registration.yaml
+  - esthesis-platform-proxy-dt.yaml

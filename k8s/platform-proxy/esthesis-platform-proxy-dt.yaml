@@ -1,0 +1,56 @@
+####################################################################################################
+# esthesis-platform-proxy-dt
+# A reverse proxy to expose the digital twin service of esthesis platform.
+####################################################################################################
+
+####################################################################################################
+# Service
+####################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-platform-proxy-dt-service
+spec:
+  selector:
+    app: esthesis-platform-proxy-dt
+  ports:
+    - port: 80
+
+####################################################################################################
+# Deployment
+####################################################################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-platform-proxy-dt-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-platform-proxy-dt
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-platform-proxy-dt
+    spec:
+      containers:
+        - name: esthesis-platform-proxy-dt
+          image: esthesis/esthesis-platform-proxy-dt
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 45
+            periodSeconds: 15
+            failureThreshold: 2
+      imagePullSecrets:
+        - name: esthesis-dockerhub

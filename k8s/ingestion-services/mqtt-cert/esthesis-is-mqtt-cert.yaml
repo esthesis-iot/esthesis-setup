@@ -4,6 +4,15 @@
 ####################################################################################################
 
 ####################################################################################################
+# Secret
+####################################################################################################
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: esthesis-is-mqtt-cert-secret
+
+####################################################################################################
 # Configmap
 ####################################################################################################
 ---
@@ -20,7 +29,7 @@ data:
   # A true/false value indicating whether logging output is produced when ACL checks take place.
   acl_log: "false"
   # The host header to use when making requests to esthesis platform.
-  esthesis_platform_host_header: ""
+  esthesis_platform_host_header: "mqtt.esthesis"
 
 ####################################################################################################
 # PVC
@@ -49,7 +58,7 @@ spec:
   selector:
     app: esthesis-is-mqtt-cert
   ports:
-    - port: 1883
+    - port: 8883
 
 ####################################################################################################
 # Deployment
@@ -74,7 +83,7 @@ spec:
           image: esthesis/esthesis-docker-mosquitto
           imagePullPolicy: Always
           ports:
-            - containerPort: 1883
+            - containerPort: 8883
           env:
             - name: ACL_CACHE_TIME
               valueFrom:
@@ -92,7 +101,7 @@ spec:
                   name: esthesis-is-mqtt-cert-config
                   key: acl_log
             - name: ESTHESIS_PLATFORM_IP
-              value: esthesis-platform-service
+              value: esthesis-platform-server-service
             - name: ESTHESIS_PLATFORM_PORT
               value: "46000"
             - name: ESTHESIS_PLATFORM_HOST_HEADER
@@ -106,32 +115,40 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: esthesis-is-mqtt-cert-secret
-                  key: ca_cert
-            - name: SERVER_CERT
+                  key: CA_CERT
+            - name: MOSQUITTO_CERT
               valueFrom:
                 secretKeyRef:
                   name: esthesis-is-mqtt-cert-secret
-                  key: server_cert
-            - name: SERVER_KEY
+                  key: MOSQUITTO_CERT
+            - name: MOSQUITTO_KEY
               valueFrom:
                 secretKeyRef:
                   name: esthesis-is-mqtt-cert-secret
-                  key: server_key
+                  key: MOSQUITTO_KEY
           volumeMounts:
             - mountPath: "/data"
               name: esthesis-is-mqtt-cert-pv
-          readinessProbe:
-            tcpSocket:
-              port: 1883
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            failureThreshold: 2
-          livenessProbe:
-            tcpSocket:
-              port: 1883
-            initialDelaySeconds: 60
-            periodSeconds: 30
-            failureThreshold: 2
+#          readinessProbe:
+#            exec:
+#              command:
+#                - nc
+#                - -vz
+#                - localhost
+#                - "8883"
+#            initialDelaySeconds: 30
+#            periodSeconds: 30
+#            failureThreshold: 2
+#          livenessProbe:
+#            exec:
+#              command:
+#                - nc
+#                - -vz
+#                - localhost
+#                - "8883"
+#            initialDelaySeconds: 60
+#            periodSeconds: 30
+#            failureThreshold: 2
       volumes:
         - name: esthesis-is-mqtt-cert-pv
           persistentVolumeClaim:

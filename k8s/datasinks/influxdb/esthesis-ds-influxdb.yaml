@@ -109,13 +109,13 @@ spec:
               path: /ping
               port: 8086
             initialDelaySeconds: 30
-            periodSeconds: 15
+            periodSeconds: 30
           livenessProbe:
               httpGet:
                 path: /ping
                 port: 8086
               initialDelaySeconds: 45
-              periodSeconds: 15
+              periodSeconds: 30
               failureThreshold: 2
       volumes:
         - name: esthesis-ds-influxdb-pv
