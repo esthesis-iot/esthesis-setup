@@ -1,16 +1,7 @@
 ####################################################################################################
 # esthesis-is-mqtt-cert
-# A MQTT data ingestion service.
+# A MQTT data ingestion service with TLS.
 ####################################################################################################
-
-####################################################################################################
-# Secret
-####################################################################################################
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: esthesis-is-mqtt-cert-secret
 
 ####################################################################################################
 # Configmap
@@ -129,26 +120,26 @@ spec:
           volumeMounts:
             - mountPath: "/data"
               name: esthesis-is-mqtt-cert-pv
-#          readinessProbe:
-#            exec:
-#              command:
-#                - nc
-#                - -vz
-#                - localhost
-#                - "8883"
-#            initialDelaySeconds: 30
-#            periodSeconds: 30
-#            failureThreshold: 2
-#          livenessProbe:
-#            exec:
-#              command:
-#                - nc
-#                - -vz
-#                - localhost
-#                - "8883"
-#            initialDelaySeconds: 60
-#            periodSeconds: 30
-#            failureThreshold: 2
+          readinessProbe:
+            exec:
+              command:
+                - nc
+                - -vz
+                - localhost
+                - "8883"
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 2
+          livenessProbe:
+            exec:
+              command:
+                - nc
+                - -vz
+                - localhost
+                - "8883"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 2
       volumes:
         - name: esthesis-is-mqtt-cert-pv
           persistentVolumeClaim:

@@ -3,7 +3,9 @@ kind: Kustomization
 
 bases:
   - ../all-minikube-dev
+  - ../../platform-proxy
   - ../../platform
+  - ../../ingestion-services/mqtt-cert
 
 patchesStrategicMerge:
   - all-minikube.yaml

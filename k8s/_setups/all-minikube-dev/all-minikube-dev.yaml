@@ -15,40 +15,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: esthesis-ps-db-monitor-service
-spec:
-  selector:
-    app: esthesis-ps-db-monitor
-  ports:
-    - port: 80
-      nodePort: 32102
-  type: NodePort
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: esthesis-ds-influxdb-monitor-service
-spec:
-  selector:
-    app: esthesis-ds-influxdb-monitor
-  ports:
-    - port: 8888
-      nodePort: 32103
-  type: NodePort
-
----
-apiVersion: v1
-kind: Service
-metadata:
   name: esthesis-ds-influxdb-service
 spec:
   selector:
     app: esthesis-ds-influxdb
   ports:
     - port: 8086
-      name: http
-      targetPort: 8086
       nodePort: 32108
   type: NodePort
 
@@ -56,23 +28,23 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: esthesis-ds-mysql-monitor-service
+  name: esthesis-ds-mysql-service
 spec:
   selector:
-    app: esthesis-ds-mysql-monitor
+    app: esthesis-ds-mysql
   ports:
-    - port: 80
-      nodePort: 32107
+    - port: 3306
+      nodePort: 32109
   type: NodePort
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: esthesis-is-mqtt-cert-service
+  name: esthesis-is-mqtt-service
 spec:
   selector:
-    app: esthesis-is-mqtt-cert
+    app: esthesis-is-mqtt
   ports:
     - port: 1883
       nodePort: 32104

@@ -3,5 +3,4 @@ kind: Kustomization
 
 resources:
   - esthesis-ps-db.yaml
-  - esthesis-ps-db-ui.yaml
   - esthesis-ps-db-backup.yaml

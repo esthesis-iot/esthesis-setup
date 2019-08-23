@@ -1,0 +1,84 @@
+####################################################################################################
+# esthesis-is-mqtt
+# A MQTT data ingestion service (without TLS).
+####################################################################################################
+
+####################################################################################################
+# PVC
+####################################################################################################
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: esthesis-is-mqtt-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+
+####################################################################################################
+# Service
+####################################################################################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: esthesis-is-mqtt-service
+spec:
+  selector:
+    app: esthesis-is-mqtt
+  ports:
+    - port: 1883
+
+####################################################################################################
+# Deployment
+####################################################################################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esthesis-is-mqtt-deployment
+spec:
+  selector:
+    matchLabels:
+      app: esthesis-is-mqtt
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: esthesis-is-mqtt
+    spec:
+      containers:
+        - name: esthesis-is-mqtt
+          image: eclipse-mosquitto:1.5.5
+          ports:
+            - containerPort: 1883
+          volumeMounts:
+            - mountPath: "/data"
+              name: esthesis-is-mqtt-pv
+          readinessProbe:
+            exec:
+              command:
+                - nc
+                - -vz
+                - localhost
+                - "1883"
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 2
+          livenessProbe:
+            exec:
+              command:
+                - nc
+                - -vz
+                - localhost
+                - "1883"
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 2
+      volumes:
+        - name: esthesis-is-mqtt-pv
+          persistentVolumeClaim:
+            claimName: esthesis-is-mqtt-pvc

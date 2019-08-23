@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
   - esthesis-ds-influxdb.yaml
   - esthesis-ds-influxdb-backup.yaml
-  - esthesis-ds-influxdb-ui.yaml
