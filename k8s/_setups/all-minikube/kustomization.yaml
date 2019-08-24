@@ -2,7 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 bases:
-  - ../all-minikube-dev
+  - ../../platform-services
+  - ../../datasinks
   - ../../platform-proxy
   - ../../platform
   - ../../ingestion-services/mqtt-cert
