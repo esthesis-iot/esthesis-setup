@@ -77,6 +77,10 @@ spec:
       labels:
         app: esthesis-ps-db
     spec:
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
       containers:
         - name: esthesis-ps-db
           image: mysql:8.0.16

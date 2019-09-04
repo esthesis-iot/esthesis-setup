@@ -6,4 +6,4 @@ bases:
   - ../../datasinks
   - ../../platform
   - ../../platform-proxy
-  - ../../ingestion-services
+  - ../../ingestion-services/mqtt-cert
