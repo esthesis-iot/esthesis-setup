@@ -63,7 +63,7 @@ spec:
         spec:
           containers:
             - name: esthesis-ds-influxdb-backup
-              image: influxdb:1.7.5-alpine
+              image: influxdb:1.7.9-alpine
               command:
                 - "/bin/sh"
                 - "-c"
