@@ -8,7 +8,7 @@ services:
     image: mysql:8.0.16
     hostname: esthesis-db
     container_name: esthesis-db
-    restart: always
+    restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password --max_allowed_packet=1024000000
     ports:
       - "${PORT_DB}:3306"
@@ -21,7 +21,7 @@ services:
     image: eclipse-mosquitto
     hostname: esthesis-mqtt
     container_name: esthesis-mqtt
-    restart: always
+    restart: unless-stopped
     ports:
       - "${PORT_MQTT}:1883"
     networks:
@@ -31,7 +31,7 @@ services:
     image: influxdb:1.7.8
     hostname: esthesis-influxdb
     container_name: esthesis-influxdb
-    restart: always
+    restart: unless-stopped
     ports:
       - "${PORT_INFLUXDB}:8086"
     environment:
@@ -45,9 +45,19 @@ services:
     image: chronograf:1.7.8
     hostname: esthesis-chronograf
     container_name: esthesis-chronograf
-    restart: always
+    restart: unless-stopped
     ports:
       - "${PORT_SINK_INFLUXDB_CHRONOGRAF}:8888"
     command: --influxdb-url=http://esthesis-influxdb:8086
+    networks:
+      - esthesis
+
+  nifi:
+    image: esthesis/esthesis-docker-nifi
+    hostname: esthesis-nifi
+    container_name: esthesis-nifi
+    restart: unless-stopped
+    ports:
+      - "${PORT_NIFI}:8080"
     networks:
       - esthesis
