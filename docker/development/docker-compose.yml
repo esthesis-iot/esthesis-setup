@@ -59,5 +59,6 @@ services:
     restart: unless-stopped
     ports:
       - "${PORT_NIFI}:8080"
+      - "20000:20000"
     networks:
       - esthesis
