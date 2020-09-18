@@ -62,3 +62,17 @@ services:
       - "20000:20000"
     networks:
       - esthesis
+
+  syslog:
+    image: pbertera/syslogserver
+    hostname: esthesis-syslog
+    container_name: esthesis-syslog
+    restart: unless-stopped
+    ports:
+      - "18080:80"
+      - "514:514/udp"
+    environment:
+      - SYSLOG_USERNAME=admin
+      - SYSLOG_PASSWORD=admin
+    networks:
+      - esthesis
