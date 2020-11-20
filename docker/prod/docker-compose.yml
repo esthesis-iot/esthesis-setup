@@ -1,0 +1,56 @@
+version: '3'
+
+networks:
+  esthesis:
+
+services:
+  db:
+    image: mysql:8.0.16
+    hostname: esthesis-db
+    container_name: esthesis-db
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --max_allowed_packet=1024000000
+    ports:
+      - "${PORT_DB}:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - esthesis
+
+  mqtt:
+    image: eclipse-mosquitto
+    hostname: esthesis-mqtt
+    container_name: esthesis-mqtt
+    restart: unless-stopped
+    ports:
+      - "${PORT_MQTT}:1883"
+    networks:
+      - esthesis
+
+  influxdb:
+    image: influxdb:1.7.8
+    hostname: esthesis-influxdb
+    container_name: esthesis-influxdb
+    restart: unless-stopped
+    ports:
+      - "${PORT_INFLUXDB}:8086"
+    environment:
+      - INFLUXDB_DB=esthesis
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
+    networks:
+      - esthesis
+
+  nifi:
+    image: esthesis/esthesis-docker-nifi
+    hostname: esthesis-nifi
+    container_name: esthesis-nifi
+    restart: unless-stopped
+    ports:
+      - "${PORT_NIFI}:8080"
+      - "20000:20000"
+    networks:
+      - esthesis
+
+  esthesis-backend:
+    image:
