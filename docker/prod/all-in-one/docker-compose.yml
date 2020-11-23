@@ -52,5 +52,10 @@ services:
     networks:
       - esthesis
 
-  esthesis-backend:
-    image:
+  esthesis-platform-backend-server:
+    image: esthesis/esthesis-platform-backend-server
+    hostname: esthesis-platform-backend-server
+    container_name: esthesis-platform-backend-server
+    restart: unless-stopped
+    networks:
+      - esthesis
