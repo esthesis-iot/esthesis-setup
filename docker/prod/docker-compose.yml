@@ -87,6 +87,21 @@ services:
     networks:
       - esthesis
 
+  esthesis-platform-proxy:
+    image: esthesis/esthesis-platform-proxy
+    hostname: esthesis-platform-proxy
+    restart: unless-stopped
+    ports:
+      - "${PORT_ESTHESIS_PROXY}:80"
+    deploy:
+      resources:
+        limits:
+          memory: "256M"
+    healthcheck:
+      test: curl -sI http://127.0.0.1 | grep -q "HTTP/1.1 404 Not Found"
+    networks:
+      - esthesis
+
   esthesis-platform-backend-server:
     image: esthesis/esthesis-platform-backend-server
     hostname: esthesis-platform-backend-server
