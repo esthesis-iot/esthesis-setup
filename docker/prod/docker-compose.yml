@@ -30,6 +30,7 @@ services:
           memory: "1G"
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 10m
     networks:
       - esthesis-prod
 
@@ -46,6 +47,7 @@ services:
           memory: "512M"
     healthcheck:
       test: nc -vz localhost 1883 || nc -vz localhost 8883
+      start_period: 10m
     networks:
       - esthesis-prod
 
@@ -67,6 +69,7 @@ services:
       - "esthesis-influxdb-storage:/var/lib/influxdb"
     healthcheck:
       test: curl -sI 127.0.0.1:8086/ping | grep -q "204 No Content"
+      start_period: 10m
     networks:
       - esthesis-prod
 
@@ -84,6 +87,7 @@ services:
           memory: "2G"
     healthcheck:
       test: curl -sI http://esthesis-nifi:8080/nifi | grep -q "HTTP/1.1 302 Found"
+      start_period: 10m
     networks:
       - esthesis-prod
 
@@ -99,6 +103,7 @@ services:
           memory: "256M"
     healthcheck:
       test: curl -sI http://127.0.0.1 | grep -q "HTTP/1.1 200 OK"
+      start_period: 10m
     networks:
       - esthesis-prod
 
@@ -120,6 +125,7 @@ services:
           memory: "1G"
     healthcheck:
       test: curl -sI http://127.0.0.1:46000/api/ping | grep -q "HTTP/1.1 200"
+      start_period: 10m
     networks:
       - esthesis-prod
 
@@ -135,5 +141,6 @@ services:
           memory: "256M"
     healthcheck:
       test: curl -sI http://127.0.0.1 | grep -q "HTTP/1.1 200"
+      start_period: 10m
     networks:
       - esthesis-prod
