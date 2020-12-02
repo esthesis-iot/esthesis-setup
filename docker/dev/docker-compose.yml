@@ -1,78 +1,84 @@
 version: '3'
 
 networks:
-  esthesis:
+  esthesis-dev:
 
 services:
-  db:
+  esthesis-db:
     image: mysql:8.0.16
     hostname: esthesis-db
-    container_name: esthesis-db
     restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password --max_allowed_packet=1024000000
     ports:
-      - "${PORT_DB}:3306"
+      - ${DB_PORT}:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
     networks:
-      - esthesis
+      - esthesis-dev
 
-  mqtt:
-    image: eclipse-mosquitto
+  esthesis-mqtt:
+    image: eclipse-mosquitto:1.6.12
     hostname: esthesis-mqtt
-    container_name: esthesis-mqtt
     restart: unless-stopped
     ports:
       - "${PORT_MQTT}:1883"
+      - "${PORT_MQTT_SECURE}:8883"
+    healthcheck:
+      test: nc -vz localhost 1883 || nc -vz localhost 8883
     networks:
-      - esthesis
+      - esthesis-dev
 
-  influxdb:
+  esthesis-influxdb:
     image: influxdb:1.7.8
     hostname: esthesis-influxdb
-    container_name: esthesis-influxdb
     restart: unless-stopped
     ports:
-      - "${PORT_INFLUXDB}:8086"
+      - ${PORT_INFLUXDB}:8086
     environment:
-      - INFLUXDB_DB=esthesis
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_PASSWORD=admin
+      - INFLUXDB_DB
+      - INFLUXDB_ADMIN_USER
+      - INFLUXDB_ADMIN_PASSWORD
+    healthcheck:
+      test: curl -sI 127.0.0.1:8086/ping | grep -q "204 No Content"
     networks:
-      - esthesis
+      - esthesis-dev
 
-  influxdb-chronograf:
+  esthesis-nifi:
+    image: esthesis/esthesis-docker-nifi:1.10.0-2
+    hostname: esthesis-nifi
+    restart: unless-stopped
+    ports:
+      - "${NIFI_WEB_UI}"
+      - "${NIFI_WEB_PROVIDERS_PORT_LOW}-${NIFI_WEB_PROVIDERS_PORT_HIGH}:${NIFI_WEB_PROVIDERS_PORT_LOW}-${NIFI_WEB_PROVIDERS_PORT_HIGH}"
+    healthcheck:
+      test: curl -sI http://esthesis-nifi:8080/nifi | grep -q "HTTP/1.1 302 Found"
+    networks:
+      - esthesis-dev
+
+  esthesis-chronograf:
     image: chronograf:1.7.8
     hostname: esthesis-chronograf
-    container_name: esthesis-chronograf
     restart: unless-stopped
     ports:
       - "${PORT_SINK_INFLUXDB_CHRONOGRAF}:8888"
     command: --influxdb-url=http://esthesis-influxdb:8086
     networks:
-      - esthesis
+      - esthesis-dev
 
-  nifi:
-    image: esthesis/esthesis-docker-nifi
-    hostname: esthesis-nifi
-    container_name: esthesis-nifi
-    restart: unless-stopped
-    ports:
-      - "${PORT_NIFI}:8080"
-      - "20000:20000"
-    networks:
-      - esthesis
-
-  syslog:
+  esthesis-syslog:
     image: pbertera/syslogserver
     hostname: esthesis-syslog
-    container_name: esthesis-syslog
     restart: unless-stopped
     ports:
-      - "18080:80"
-      - "514:514/udp"
+      - "${PORT_SYSLOG_WEB}:80"
+      - "${PORT_SYSLOG_UDP}:514/udp"
     environment:
       - SYSLOG_USERNAME=admin
       - SYSLOG_PASSWORD=admin
     networks:
-      - esthesis
+      - esthesis-dev

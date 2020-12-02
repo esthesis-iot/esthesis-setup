@@ -1,7 +1,7 @@
 version: '3'
 
 networks:
-  esthesis:
+  esthesis-prod:
 
 volumes:
   esthesis-db-storage:
@@ -31,7 +31,7 @@ services:
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
     networks:
-      - esthesis
+      - esthesis-prod
 
   esthesis-mqtt:
     image: eclipse-mosquitto:1.6.12
@@ -47,7 +47,7 @@ services:
     healthcheck:
       test: nc -vz localhost 1883 || nc -vz localhost 8883
     networks:
-      - esthesis
+      - esthesis-prod
 
   esthesis-influxdb:
     image: influxdb:1.7.8
@@ -68,7 +68,7 @@ services:
     healthcheck:
       test: curl -sI 127.0.0.1:8086/ping | grep -q "204 No Content"
     networks:
-      - esthesis
+      - esthesis-prod
 
   esthesis-nifi:
     image: esthesis/esthesis-docker-nifi:1.10.0-2
@@ -85,7 +85,7 @@ services:
     healthcheck:
       test: curl -sI http://esthesis-nifi:8080/nifi | grep -q "HTTP/1.1 302 Found"
     networks:
-      - esthesis
+      - esthesis-prod
 
   esthesis-platform-proxy:
     image: esthesis/esthesis-platform-proxy
@@ -100,7 +100,7 @@ services:
     healthcheck:
       test: curl -sI http://127.0.0.1 | grep -q "HTTP/1.1 404 Not Found"
     networks:
-      - esthesis
+      - esthesis-prod
 
   esthesis-platform-backend-server:
     image: esthesis/esthesis-platform-backend-server
@@ -121,7 +121,7 @@ services:
     healthcheck:
       test: curl -sI http://127.0.0.1:46000/api/ping | grep -q "HTTP/1.1 200"
     networks:
-      - esthesis
+      - esthesis-prod
 
   esthesis-platform-ui:
     image: esthesis/esthesis-platform-ui
@@ -136,4 +136,4 @@ services:
     healthcheck:
       test: curl -sI http://127.0.0.1 | grep -q "HTTP/1.1 200"
     networks:
-      - esthesis
+      - esthesis-prod
