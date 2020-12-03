@@ -129,7 +129,7 @@ services:
     networks:
       - esthesis-prod
 
-  esthesis-platform-ui:
+  esthesis-platform-frontend-server:
     image: esthesis/esthesis-platform-frontend-server
     hostname: esthesis-platform-frontend-server
     restart: unless-stopped
