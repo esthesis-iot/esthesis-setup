@@ -130,8 +130,8 @@ services:
       - esthesis-prod
 
   esthesis-platform-ui:
-    image: esthesis/esthesis-platform-ui
-    hostname: esthesis-platform-ui
+    image: esthesis/esthesis-platform-frontend-server
+    hostname: esthesis-platform-frontend-server
     restart: unless-stopped
     ports:
       - "${PORT_ESTHESIS_UI}:80"
