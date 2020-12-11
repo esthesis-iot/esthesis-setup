@@ -79,8 +79,7 @@ services:
     restart: unless-stopped
     expose:
       - "${NIFI_WEB_UI}"
-    ports:
-      - "${NIFI_WEB_PROVIDERS_PORT_LOW}-${NIFI_WEB_PROVIDERS_PORT_HIGH}:${NIFI_WEB_PROVIDERS_PORT_LOW}-${NIFI_WEB_PROVIDERS_PORT_HIGH}"
+      - "${NIFI_WEB_PRODUCER_PORT}:20000"
     deploy:
       resources:
         limits:

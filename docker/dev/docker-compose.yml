@@ -54,7 +54,7 @@ services:
     restart: unless-stopped
     ports:
       - "${NIFI_WEB_UI}:8080"
-      - "${NIFI_WEB_PROVIDERS_PORT_LOW}-${NIFI_WEB_PROVIDERS_PORT_HIGH}:${NIFI_WEB_PROVIDERS_PORT_LOW}-${NIFI_WEB_PROVIDERS_PORT_HIGH}"
+      - "${NIFI_WEB_PRODUCER_PORT}:20000"
     healthcheck:
       test: curl -sI http://esthesis-nifi:8080/nifi | grep -q "HTTP/1.1 302 Found"
     networks:
